@@ -8,11 +8,11 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Driver {
 
-    Long driverId;
+    String driverId;
     String driverName;
 
     protected Driver(){}
-    public Driver(Long driverId, String driverName){
+    public Driver(String driverId, String driverName){
         this.driverId = driverId;
         this.driverName = driverName;
     }
@@ -21,7 +21,7 @@ public class Driver {
         return driverName;
     }
 
-    public Long getDriverId() {
+    public String getDriverId() {
         return driverId;
     }
 

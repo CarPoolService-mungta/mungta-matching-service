@@ -9,10 +9,10 @@ import com.carpool.partyMatch.domain.MatchStatus;
 public class MatchProcessResponse {
 
   private Long partyInfoId;
-  private Long userId;
+  private String userId;
   private MatchStatus matchStatus;
 
-  public MatchProcessResponse(Long partyInfoId, Long userId, MatchStatus matchStatus) {
+  public MatchProcessResponse(Long partyInfoId, String userId, MatchStatus matchStatus) {
 
     this.partyInfoId = partyInfoId;
     this.userId = userId;

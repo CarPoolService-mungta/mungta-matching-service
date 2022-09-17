@@ -8,16 +8,16 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Carpooler {
 
-    Long userId;
+    String userId;
     String name;
 
     protected Carpooler(){}
-    public Carpooler(Long userId,String name){
+    public Carpooler(String userId,String name){
         this.userId = userId;
         this.name = name;
     }
 
-    public Long getUserId(){
+    public String getUserId(){
         return userId;
     }
 

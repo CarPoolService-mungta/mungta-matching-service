@@ -6,35 +6,52 @@ import com.carpool.partyMatch.AbstractEvent;
 import com.carpool.partyMatch.domain.PartyStatus;
 import com.carpool.partyMatch.domain.Driver;
 
-public class PartyRegistered extends AbstractEvent{
+public class PartyRegistered extends AbstractEvent {
 
   Long id;
-  Long driverId;
+  String driverId;
   String driverName;
+  int curNumberOfParty;
+  int maxNumberOfParty;
 
+  public Long getId() {
+    return id;
+  }
 
-      public Long getId() {
-          return id;
-      }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-      public void setId(Long id) {
-          this.id = id;
-      }
+  public String getDriverId() {
+    return driverId;
+  }
 
-      public Long getDriverId() {
-          return driverId;
-      }
+  public void setDriverId(String driverId) {
+    this.driverId = driverId;
+  }
 
-      public void setDriverId(Long driverId) {
-          this.driverId = driverId;
-      }
+  public int getCurNumberOfParty() {
+    return curNumberOfParty;
+  }
 
-      public String getDriverName() {
-        return driverName;
-      }
+  public void setCurNumberOfParty(int curNumberOfParty) {
+    this.curNumberOfParty = curNumberOfParty;
+  }
 
-      public void setDriverName(String driverName) {
-        this.driverName = driverName;
-      }
+  public int getMaxNumberOfParty() {
+    return maxNumberOfParty;
+  }
+
+  public void setMaxNumberOfParty(int maxNumberOfParty) {
+    this.maxNumberOfParty = maxNumberOfParty;
+  }
+
+  public String getDriverName() {
+    return driverName;
+  }
+
+  public void setDriverName(String driverName) {
+    this.driverName = driverName;
+  }
 
 }

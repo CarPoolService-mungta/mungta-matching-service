@@ -6,8 +6,8 @@ import lombok.Data;
 public class MatchProcessDto {
 
   private Long partyInfoId;
-  private Long driverId;
+  private String driverId;
   private String driverName;
-  private Long userId;
+  private String userId;
 
 }

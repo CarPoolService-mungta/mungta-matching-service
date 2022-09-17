@@ -8,8 +8,9 @@ import lombok.Getter;
 @Getter
 public enum ApiStatus {
 
-    INVALID_MODIFY_MATCH(HttpStatus.BAD_REQUEST, -701, "이미 신청중인 매칭이 있습니다. 잠시 후 다시 시도해 주세요."),
-    NOT_EXIST_MATCH(HttpStatus.BAD_REQUEST,-702, "요청하신 정보가 존재하지 않습니다."),
+    INVALID_MODIFY_MATCH(HttpStatus.BAD_REQUEST, -701, "이미 신청중인 매칭이 있습니다."),
+    INVALID_DENY_MATCH(HttpStatus.BAD_REQUEST, -702, "신청 불가한 매칭입니다."),
+    NOT_EXIST_MATCH(HttpStatus.BAD_REQUEST,-703, "요청하신 정보가 존재하지 않습니다."),
     UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -1, "예상치 못한 에러가 발생하였습니다.")
     ;
     private final HttpStatus httpStatus;

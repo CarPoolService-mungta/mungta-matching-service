@@ -2,6 +2,10 @@ package com.carpool.partyMatch.domain;
 
 import java.io.Serializable;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.FetchType;
@@ -14,39 +18,18 @@ import java.util.List;
 //import javax.persistence.OneToMany;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class MatchInfo extends BaseEntity {
+
   @Id @GeneratedValue
   Long id;
 
   Long partyInfoId;
 
-  Long userId;
+  String userId;
 
   MatchStatus matchStatus;
-
-    public Long getPartyInfoId() {
-        return partyInfoId;
-    }
-
-    public void setPartyInfoId(Long partyInfoId) {
-        this.partyInfoId = partyInfoId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public MatchStatus getMatchStatus() {
-            return matchStatus;
-    }
-
-    public void setMatchStatus(MatchStatus matchStatus) {
-        this.matchStatus = matchStatus;
-    }
 
 
 }

@@ -1,8 +1,12 @@
 package com.carpool.partyMatch.domain;
 
 public enum MatchStatus{
-    WATING,
+    WAITING,
     ACCEPT,
     DENY,
-    CANCEL;
+    CANCEL,
+    START,
+    CLOSE,
+    FORMED,
+    AVAILABLE;
 }

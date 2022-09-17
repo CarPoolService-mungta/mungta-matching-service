@@ -6,7 +6,7 @@ import com.carpool.partyMatch.domain.MatchStatus;
 public class MatchAccepted extends AbstractEvent{
     Long id;
     Long partyInfoId;
-    Long userId;
+    String userId;
     MatchStatus matchStatus;
 
     public Long getId() {
@@ -22,11 +22,11 @@ public class MatchAccepted extends AbstractEvent{
         this.partyInfoId = partyInfoId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

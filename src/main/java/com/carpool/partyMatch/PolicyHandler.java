@@ -28,7 +28,9 @@ public class PolicyHandler {
 
         party.setPartyInfoId(partyRegistered.getId());
         party.setDriver(new Driver(partyRegistered.getDriverId(), partyRegistered.getDriverName()));
-        party.setPartyStatus(PartyStatus.FORMED);
+        party.setCurNumberOfParty(partyRegistered.getCurNumberOfParty());
+        party.setMaxNumberOfParty(partyRegistered.getMaxNumberOfParty());
+        party.setPartyStatus(PartyStatus.AVAILABLE);
 
         partyRepository.save(party);
     }

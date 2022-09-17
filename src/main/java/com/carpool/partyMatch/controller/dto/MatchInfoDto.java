@@ -8,6 +8,6 @@ import com.carpool.partyMatch.domain.MatchStatus;
 public class MatchInfoDto {
 
   private Long partyInfoId;
-  private Long userId;
+  private String userId;
 
 }

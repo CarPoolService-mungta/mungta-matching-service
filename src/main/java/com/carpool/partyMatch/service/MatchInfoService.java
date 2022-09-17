@@ -9,14 +9,17 @@ import com.carpool.partyMatch.controller.dto.MatchInfoDto;
 import com.carpool.partyMatch.controller.dto.MatchProcessDto;
 import com.carpool.partyMatch.controller.dto.PartyProcessDto;
 import com.carpool.partyMatch.controller.dto.response.PartyProcessResponse;
+import com.carpool.partyMatch.controller.dto.response.MatchProcessResponse;
 
 public interface MatchInfoService {
 
-  public List<MatchInfo> findMatchUsers(Long partyInfoId);
+  public List<MatchInfo> findMatchInfoList(Long partyInfoId, String matchStatus);
+
+  public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId);
 
   public MatchInfo registerMatchInfo(MatchInfoDto matchInfoDto);
 
-  public MatchInfo cancelMatchInfo(MatchInfoDto matchInfoDto);
+  public void cancelMatchInfo(MatchInfoDto matchInfoDto);
 
   public MatchInfo acceptMatchInfo(MatchProcessDto matchProcessDto);
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 
 import com.carpool.partyMatch.domain.MatchStatus;
@@ -30,21 +31,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@RequestMapping("/api/match")
 @RequiredArgsConstructor
 @Slf4j
 public class MatchInfoController {
 
   final private MatchInfoService matchInfoService;
 
-  @Autowired
-	private MatchInfoService MatchInfoService;
-
   @Description("파티 매칭 정보 전체 조회")
-  @PostMapping("/matches")
-	public ResponseEntity<List<MatchInfoResponse>> getMatchUsers(@RequestParam Long partyInfoId) {
+  @GetMapping("/matchInfoes")
+	public ResponseEntity<List<MatchInfoResponse>> getMatchInfoes(@RequestParam Long partyInfoId, @RequestParam String matchStatus) {
     log.info("***************** MatchInfoController : 파티 매칭 정보 전체 조회 Postmapping 호출 *****************");
 
-    List<MatchInfo> matchInfoList = matchInfoService.findMatchUsers(partyInfoId);
+    List<MatchInfo> matchInfoList = matchInfoService.findMatchInfoList(partyInfoId, matchStatus);
 
     List<MatchInfoResponse> response = matchInfoList.stream()
                 .map(m -> new MatchInfoResponse(m.getPartyInfoId(), m.getUserId()))
@@ -53,8 +52,20 @@ public class MatchInfoController {
     return ResponseEntity.ok(response);
 	}
 
+
+  @Description("개인 파티 매칭 정보 조회")
+  @GetMapping("/matchInfo")
+	public ResponseEntity<MatchProcessResponse> getMatchInfo(@RequestParam Long partyInfoId, @RequestParam String userId) {
+    log.info("***************** MatchInfoController : 개인 파티 매칭 정보 조회 Postmapping 호출 *****************");
+
+    MatchProcessResponse response = matchInfoService.findMatchInfo(partyInfoId, userId);
+
+    return ResponseEntity.ok(response);
+	}
+
+
   @Description("파티 신청")
-  @PostMapping("/matches/apply")
+  @PostMapping("/apply")
 	public ResponseEntity<MatchInfoResponse> applyParty(@RequestBody MatchInfoDto matchInfoDto) {
     log.info("***************** MatchInfoController : 파티 신청 Postmapping 호출 *****************");
 
@@ -65,18 +76,16 @@ public class MatchInfoController {
 	}
 
   @Description("파티 신청 취소")
-  @PostMapping("/matches/cancel")
-	public ResponseEntity<MatchProcessResponse> cancelPartyApplication(@RequestBody MatchInfoDto matchInfoDto) {
+  @PostMapping("/cancel")
+	public ResponseEntity cancelPartyApplication(@RequestBody MatchInfoDto matchInfoDto) {
     log.info("***************** MatchInfoController : 파티 신청 취소 Postmapping 호출 *****************");
 
-    MatchInfo matchInfo = matchInfoService.cancelMatchInfo(matchInfoDto);
-    MatchProcessResponse response = new MatchProcessResponse(matchInfo.getPartyInfoId(), matchInfo.getUserId(), matchInfo.getMatchStatus());
-
-    return ResponseEntity.ok(response);
+    matchInfoService.cancelMatchInfo(matchInfoDto);
+    return ResponseEntity.noContent().build();
 	}
 
   @Description("파티 신청 수락")
-  @PostMapping("/matches/accept")
+  @PostMapping("/accept")
 	public ResponseEntity<MatchProcessResponse> acceptPartyApplication(@RequestBody MatchProcessDto matchProcessDto) {
     log.info("***************** MatchInfoController : 파티 신청 수락 Postmapping 호출 *****************");
 
@@ -87,7 +96,7 @@ public class MatchInfoController {
 	}
 
   @Description("파티 신청 거절")
-  @PostMapping("/matches/deny")
+  @PostMapping("/deny")
 	public ResponseEntity<MatchProcessResponse> denyPartyApplication(@RequestBody MatchProcessDto matchProcessDto) {
     log.info("***************** MatchInfoController : 파티 신청 거절 Postmapping 호출 *****************");
 
@@ -98,7 +107,7 @@ public class MatchInfoController {
 	}
 
   @Description("파티 시작")
-  @PostMapping("/matches/partyStart")
+  @PostMapping("/partyStart")
 	public ResponseEntity<PartyProcessResponse> startParty(@RequestBody PartyProcessDto partyProcessDto) {
     log.info("***************** MatchInfoController : 파티 시작 Postmapping 호출 *****************");
 
@@ -108,7 +117,7 @@ public class MatchInfoController {
 	}
 
   @Description("파티 종료")
-  @PostMapping("/matches/partyClose")
+  @PostMapping("/partyClose")
 	public ResponseEntity<PartyProcessResponse> closeParty(@RequestBody PartyProcessDto partyProcessDto) {
     log.info("***************** MatchInfoController : 파티 종료 Postmapping 호출 *****************");
 
