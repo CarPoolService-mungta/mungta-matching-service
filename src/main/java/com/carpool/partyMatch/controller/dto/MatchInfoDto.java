@@ -10,4 +10,11 @@ public class MatchInfoDto {
   private Long partyInfoId;
   private String userId;
 
+  public MatchInfoDto(Long partyInfoId, String userId) {
+
+    this.partyInfoId = partyInfoId;
+    this.userId = userId;
+
+  }
+
 }

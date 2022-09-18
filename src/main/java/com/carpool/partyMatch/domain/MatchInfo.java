@@ -31,5 +31,8 @@ public class MatchInfo extends BaseEntity {
 
   MatchStatus matchStatus;
 
+  public boolean isUser(String userId) {
+    return this.getUserId().equals(userId);
+}
 
 }

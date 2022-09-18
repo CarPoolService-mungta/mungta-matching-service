@@ -67,6 +67,8 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         if(matchInfo != null){
             matchProcessResponse.setMatchStatus(matchInfo.getMatchStatus());
+        } else{
+            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
         }
 
         if(driver.getDriverId().equals(userId)){
@@ -107,8 +109,12 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         Party party = partyRepository.findByPartyInfoId(matchInfoDto.getPartyInfoId());
         validateCancelParty(party);
+
         //파티 상태 확인
         MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId());
+        if(matchInfo == null){
+            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+        }
 
         boolean isAccepted = false;
         if(matchInfo.getMatchStatus() == MatchStatus.ACCEPT) isAccepted = true;

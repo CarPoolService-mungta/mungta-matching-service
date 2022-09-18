@@ -10,4 +10,13 @@ public class MatchProcessDto {
   private String driverName;
   private String userId;
 
+  public MatchProcessDto(Long partyInfoId, String driverId, String driverName, String userId) {
+
+    this.partyInfoId = partyInfoId;
+    this.driverId = driverId;
+    this.driverName = driverName;
+    this.userId = userId;
+
+  }
+
 }

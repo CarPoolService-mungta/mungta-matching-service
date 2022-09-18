@@ -37,8 +37,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 
 @SpringBootApplication
-@EnableJpaAuditing
-@EnableSwagger2
 @RestController
 @EnableAspectJAutoProxy
 @EnableFeignClients

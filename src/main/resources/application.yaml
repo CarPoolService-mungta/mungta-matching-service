@@ -9,20 +9,23 @@ server:
 spring:
   profiles: default
   datasource:
-    url: jdbc:mysql://localhost:3306/MUNGTA?serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: skcc10633
-    password: admin
+    url: jdbc:mysql://match-service-db.mysql.database.azure.com:3306/match_db?serverTimezone=Asia/Seoul
+    username: mungta
+    password: match12#$
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    # hibernate:
+    #   ddl-auto: create
     properties:
       hibernate:
         show_sql: true
         format_sql: true
+
   cloud:
     stream:
       kafka:
         binder:
-          brokers: localhost:29092
+          brokers: localhost:9092
         streams:
           binder:
             configuration:
@@ -71,3 +74,10 @@ spring:
         event-out:
           destination: petstore
           contentType: application/json
+
+
+api:
+  url:
+    user: http://localhost:8082/api/user
+    review: http://localhost:8083/api/review
+
