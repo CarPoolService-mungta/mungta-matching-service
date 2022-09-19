@@ -3,16 +3,12 @@ package com.carpool.partyMatch.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.carpool.partyMatch.client.dto.UserResponse;
+import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
 import org.springframework.context.annotation.Description;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,5 +32,13 @@ public class MatchPartyMemberController {
     List<MatchPartyMemberResponse> response = matchPartyMemberService.findMatchPartyMembers(partyInfoId, matchStatus);
 
     return ResponseEntity.ok(response);
+  }
+
+  @Description("파티 매칭 멤저 및 유저 매칭 상태 조회")
+  @GetMapping("/summary")
+  public ResponseEntity<MatchStatusAndMemberListResponse> findPartyMembersListSummary(@RequestParam long partyInfoId,
+                                                                                            @RequestHeader("userId") String userId) {
+
+    return ResponseEntity.ok(matchPartyMemberService.findPartyMembersListSummary(partyInfoId, userId));
   }
 }

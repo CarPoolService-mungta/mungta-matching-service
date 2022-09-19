@@ -43,6 +43,10 @@ spring:
           destination: petstore
           contentType: application/json
 
+api:
+  url:
+    user: http://localhost:8081/api/user
+
 logging:
   level:
     org.hibernate.type: trace

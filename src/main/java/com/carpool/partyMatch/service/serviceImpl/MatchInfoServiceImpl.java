@@ -55,12 +55,41 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         return matchInfoList;
     }
 
+    //userId가 왜있는지 모르겠음..
+//    @Override
+//    public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId){
+//        log.info("********* findMatchInfo Service *********");
+//
+//        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
+//        Party party = partyRepository.findByPartyInfoId(partyInfoId);
+//
+//        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(partyInfoId, userId, MatchStatus.AVAILABLE);
+//        Driver driver = party.getDriver();
+//
+//        if(matchInfo != null){
+//            matchProcessResponse.setMatchStatus(matchInfo.getMatchStatus());
+//        } else{
+//            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+//        }
+//
+//        if(driver.getDriverId().equals(userId)){
+//
+//            if(party.getPartyStatus() == PartyStatus.STARTED){
+//                matchProcessResponse.setMatchStatus(MatchStatus.START);
+//            }
+//            else{
+//                matchProcessResponse.setMatchStatus(MatchStatus.FORMED);
+//            }
+//        }
+//
+//        return matchProcessResponse;
+//    }
     @Override
     public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId){
         log.info("********* findMatchInfo Service *********");
-
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
         Party party = partyRepository.findByPartyInfoId(partyInfoId);
+
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).get();
 
         MatchProcessResponse matchProcessResponse = new MatchProcessResponse(partyInfoId, userId, MatchStatus.AVAILABLE);
         Driver driver = party.getDriver();
@@ -111,7 +140,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         validateCancelParty(party);
 
         //파티 상태 확인
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId());
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId()).get();
         if(matchInfo == null){
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
         }
@@ -140,7 +169,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         Party party = partyRepository.findByPartyInfoId(matchProcessDto.getPartyInfoId());
         validateDriver(party, matchProcessDto.getDriverId());
 
-        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId());
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId()).get();
         validateProcess(matchInfo);
 
         matchInfo.setMatchStatus(MatchStatus.ACCEPT);
@@ -164,7 +193,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         Party party = partyRepository.findByPartyInfoId(matchProcessDto.getPartyInfoId());
         validateDriver(party, matchProcessDto.getDriverId());
 
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId());
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId()).get();
         validateProcess(matchInfo);
 
         matchInfo.setMatchStatus(MatchStatus.DENY);
@@ -183,7 +212,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         }
 
-        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).get();
         if (matchInfo != null) {
             throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
         }

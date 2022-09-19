@@ -1,15 +1,14 @@
 package com.carpool.partyMatch.service.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.lang.RuntimeException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.function.Function;
 
+import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.beans.BeanUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.MatchStatus;
 import com.carpool.partyMatch.service.MatchPartyMemberService;
 import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberResponse;
-import com.carpool.partyMatch.controller.dto.MatchPartyMemberDto;
 import com.carpool.partyMatch.client.ReviewServiceClient;
 import com.carpool.partyMatch.client.UserServiceClient;
 import com.carpool.partyMatch.client.dto.UserResponse;
@@ -62,6 +60,25 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
     // List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatus(partyInfoId, ms);
 
     return matchPartyMemberList;
+  }
+
+  @Override
+  public MatchStatusAndMemberListResponse findPartyMembersListSummary(Long partyInfoId, String userId){
+    List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
+      {
+        add(MatchStatus.ACCEPT);
+        add(MatchStatus.START);
+        add(MatchStatus.FORMED);
+        add(MatchStatus.CLOSE);
+      }
+    } ;
+    List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
+    MatchInfo userMatchInfo= matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).orElse(null);
+
+    return MatchStatusAndMemberListResponse.of(userServiceClient.getUserList(matchInfoList.stream()
+            .map(o->o.getUserId())
+            .collect(Collectors.toList())),
+            Objects.isNull(userMatchInfo) ? null : userMatchInfo.getMatchStatus());
   }
 
 }

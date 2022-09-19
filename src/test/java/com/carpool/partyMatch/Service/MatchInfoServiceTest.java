@@ -95,7 +95,7 @@ class MatchInfoServiceTest {
     @Test
     void getMatchInfo() {
 
-        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(matchInfo);
+        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID).get()).willReturn(matchInfo);
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessResponse matchProcessResponse = matchInfoService.findMatchInfo(PARTYINFO_ID, USER_ID);
@@ -124,7 +124,7 @@ class MatchInfoServiceTest {
     @Test
     void acceptMatchInfo_not_match_by_driverId() {
 
-        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(matchInfo);
+        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID).get()).willReturn(matchInfo);
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessDto matchProcessDto = new MatchProcessDto(PARTYINFO_ID, DRIVER_ID, DRIVER_NAME, USER_ID);
