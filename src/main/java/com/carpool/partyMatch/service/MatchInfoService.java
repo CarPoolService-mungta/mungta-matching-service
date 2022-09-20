@@ -28,4 +28,5 @@ public interface MatchInfoService {
   public PartyProcessResponse startParty(PartyProcessDto partyProcessDto);
 
   public PartyProcessResponse closeParty(PartyProcessDto partyProcessDto);
+  public PartyProcessResponse cancelParty(PartyProcessDto partyProcessDto);
 }

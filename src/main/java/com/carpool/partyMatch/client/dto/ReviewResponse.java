@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class ReviewResponse {
 
-  String userId;
-  String content;
-  String reviewScore;
+  private String userId;
+  private String comment;
+  private String scoreAvg;
 
   public String getUserId() {
     return userId;

@@ -120,4 +120,14 @@ public class MatchInfoController {
     return ResponseEntity.ok(response);
 	}
 
+    @Description("파티 취소")
+    @PostMapping("/party-cancel")
+    public ResponseEntity<PartyProcessResponse> cancelParty(@RequestBody PartyProcessDto partyProcessDto) {
+        log.info("***************** MatchInfoController : 파티 종료 Postmapping 호출 *****************");
+
+        PartyProcessResponse response = matchInfoService.cancelParty(partyProcessDto);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

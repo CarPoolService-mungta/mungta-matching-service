@@ -46,6 +46,7 @@ spring:
 api:
   url:
     user: http://localhost:8081/api/user
+    review: http://localhost:8086/api/review
 
 logging:
   level:

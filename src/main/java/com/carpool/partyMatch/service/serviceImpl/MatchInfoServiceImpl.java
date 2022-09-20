@@ -1,11 +1,9 @@
 package com.carpool.partyMatch.service.serviceImpl;
 
 import java.util.List;
-import java.lang.RuntimeException;
-import java.util.stream.Collectors;
 
+import com.carpool.partyMatch.domain.kafka.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +14,9 @@ import com.carpool.partyMatch.controller.dto.response.PartyProcessResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchProcessResponse;
 import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.Party;
-import com.carpool.partyMatch.domain.Carpooler;
 import com.carpool.partyMatch.domain.Driver;
 import com.carpool.partyMatch.domain.MatchStatus;
 import com.carpool.partyMatch.domain.PartyStatus;
-import com.carpool.partyMatch.domain.kafka.MatchAccepted;
-import com.carpool.partyMatch.domain.kafka.MatchCancelled;
-import com.carpool.partyMatch.domain.kafka.PartyStarted;
-import com.carpool.partyMatch.domain.kafka.PartyClosed;
 import com.carpool.partyMatch.repository.MatchInfoRepository;
 import com.carpool.partyMatch.repository.PartyRepository;
 import com.carpool.partyMatch.service.MatchInfoService;
@@ -206,7 +199,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         //파티 상태 확인 (시작 또는 종료이면 신청 불가)
         Party party = partyRepository.findByPartyInfoId(partyInfoId);
 
-        if(party.getPartyStatus() != PartyStatus.AVAILABLE && party.getPartyStatus() != PartyStatus.FULL){
+        if(party.getPartyStatus() != PartyStatus.OPEN && party.getPartyStatus() != PartyStatus.FULL){
 
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
 
@@ -227,7 +220,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
     private void validateCancelParty(Party party) {
 
-        if(party.getPartyStatus() != PartyStatus.AVAILABLE && party.getPartyStatus() != PartyStatus.FULL){
+        if(party.getPartyStatus() != PartyStatus.OPEN && party.getPartyStatus() != PartyStatus.FULL){
 
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
 
@@ -235,11 +228,11 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
     }
 
-    private void validateDriver(Party party, String driverId) {
+    private void validateDriver(Party party, String userId) {
 
-        if(!party.isDriver(driverId)){
+        if(!party.isDriver(userId)){
 
-            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+            throw new ApiException(ApiStatus.NOT_DRIVER);
 
         }
     }
@@ -263,7 +256,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
 
-        validateDriver(party, partyProcessDto.getDriverId());
+        validateDriver(party, partyProcessDto.getUserId());
         party.setPartyStatus(PartyStatus.STARTED);
 
         //파티 시작 이벤트 발행
@@ -285,11 +278,32 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
 
-        validateDriver(party, partyProcessDto.getDriverId());
+        validateDriver(party, partyProcessDto.getUserId());
         party.setPartyStatus(PartyStatus.CLOSED);
 
         //파티 종료 이벤트 발행
         PartyClosed partyClosed = new PartyClosed();
+        BeanUtils.copyProperties(party, partyClosed);
+        partyClosed.publish();
+
+        PartyProcessResponse response = new PartyProcessResponse(party.getPartyInfoId(), party.getPartyStatus());
+
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public PartyProcessResponse cancelParty(PartyProcessDto partyProcessDto){
+        log.info("********* cancelParty *********");
+        log.debug(String.valueOf(partyProcessDto));
+
+        Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
+
+        validateDriver(party, partyProcessDto.getUserId());
+        party.setPartyStatus(PartyStatus.CANCELED);
+
+        //파티 취소 이벤트 발행
+        PartyCanceled partyClosed = new PartyCanceled();
         BeanUtils.copyProperties(party, partyClosed);
         partyClosed.publish();
 

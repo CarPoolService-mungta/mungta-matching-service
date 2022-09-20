@@ -1,7 +1,5 @@
 package com.carpool.partyMatch;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -30,7 +28,7 @@ public class PolicyHandler {
         party.setDriver(new Driver(partyRegistered.getDriverId(), partyRegistered.getDriverName()));
         party.setCurNumberOfParty(partyRegistered.getCurNumberOfParty());
         party.setMaxNumberOfParty(partyRegistered.getMaxNumberOfParty());
-        party.setPartyStatus(PartyStatus.AVAILABLE);
+        party.setPartyStatus(PartyStatus.OPEN);
 
         partyRepository.save(party);
     }

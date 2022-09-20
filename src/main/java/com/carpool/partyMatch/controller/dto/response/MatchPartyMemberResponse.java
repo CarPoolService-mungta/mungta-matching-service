@@ -1,29 +1,37 @@
 package com.carpool.partyMatch.controller.dto.response;
 
-import lombok.Data;
-
-import com.carpool.partyMatch.domain.MatchStatus;
-import com.carpool.partyMatch.client.dto.UserResponse;
 import com.carpool.partyMatch.client.dto.ReviewResponse;
+import com.carpool.partyMatch.client.dto.UserResponse;
+import lombok.*;
 
-@Data
+import java.util.Objects;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MatchPartyMemberResponse {
 
-  private String userId;
-  private String userName;
-  private String gender;
-  private String userTeamName;
-  private String content;
-  private String reviewScore;
+    private String userId;
+    private String userName;
+    private String gender;
+    private String userTeamName;
+    private byte[] userPhoto;
+    private String fileExtension;
+    private String comment;
+    private String scoreAvg;
 
-  public MatchPartyMemberResponse(UserResponse userResponse, ReviewResponse reviewResponse) {
-
-    this.userId = userResponse.getUserId();
-    this.userName = userResponse.getUserName();
-    this.gender = userResponse.getGender();
-    this.userTeamName = userResponse.getUserTeamName();
-    this.content = reviewResponse.getContent();
-    this.reviewScore = reviewResponse.getReviewScore();
-
-  }
+    public static MatchPartyMemberResponse of(UserResponse userResponse, ReviewResponse reviewResponse){
+        return MatchPartyMemberResponse.builder()
+                .userId(userResponse.getUserId())
+                .userName(userResponse.getUserName())
+                .gender(userResponse.getGender())
+                .userTeamName(userResponse.getUserTeamName())
+                .userPhoto(userResponse.getUserPhoto())
+                .fileExtension(userResponse.getFileExtension())
+                .comment(Objects.isNull(reviewResponse)? null : reviewResponse.getComment())
+                .scoreAvg(Objects.isNull(reviewResponse)? null : reviewResponse.getScoreAvg())
+                .build();
+    }
 }

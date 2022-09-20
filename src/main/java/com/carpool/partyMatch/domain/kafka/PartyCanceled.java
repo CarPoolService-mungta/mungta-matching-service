@@ -1,18 +1,18 @@
 package com.carpool.partyMatch.domain.kafka;
 
 import com.carpool.partyMatch.AbstractEvent;
-import com.carpool.partyMatch.domain.PartyStatus;
 import com.carpool.partyMatch.domain.Driver;
+import com.carpool.partyMatch.domain.PartyStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
-public class PartyClosed extends AbstractEvent{
+public class PartyCanceled extends AbstractEvent {
 
-  Long id;
-  Long partyInfoId;
+    Long id;
+    Long partyInfoId;
 
-  Driver driver;
+    Driver driver;
 
-  PartyStatus partyStatus;
+    PartyStatus partyStatus;
 }

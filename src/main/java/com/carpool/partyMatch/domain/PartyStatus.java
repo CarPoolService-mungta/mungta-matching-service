@@ -1,9 +1,15 @@
 package com.carpool.partyMatch.domain;
 
 public enum PartyStatus{
+//    FULL,
+//    OPEN,
+//    STARTED,
+//    CANCELED,
+//    CLOSED;
+
+    OPEN,
     FULL,
-    AVAILABLE,
-    STARTED,
     CANCELED,
-    CLOSED;
+    STARTED,
+    CLOSED,
 }

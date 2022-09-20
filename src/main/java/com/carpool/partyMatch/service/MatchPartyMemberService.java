@@ -3,15 +3,16 @@ package com.carpool.partyMatch.service;
 import java.util.List;
 
 import com.carpool.partyMatch.client.dto.UserResponse;
+import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberWithMatchStatusResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
-import org.springframework.data.repository.query.Param;
-
-import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberResponse;
+import com.carpool.partyMatch.domain.MatchStatus;
 
 public interface MatchPartyMemberService {
 
-  public List<MatchPartyMemberResponse> findMatchPartyMembers(Long partyInfoId, String matchStatus);
+  public MatchPartyMemberWithMatchStatusResponse findMatchPartyMembers(Long partyInfoId);
 
-  MatchStatusAndMemberListResponse findPartyMembersListSummary(Long partyInfoId, String userId);
+  MatchStatusAndMemberListResponse findPartyMembersListSummaryAndMatchStatus(Long partyInfoId, String userId);
+
+  List<UserResponse> findPartyMembersListSummary(Long partyInfoId);
 }
 
