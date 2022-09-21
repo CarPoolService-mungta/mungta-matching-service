@@ -2,9 +2,7 @@ package com.carpool.partyMatch.domain;
 
 import java.io.Serializable;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -18,21 +16,32 @@ import java.util.List;
 //import javax.persistence.OneToMany;
 
 @Entity
-@Data
+@Getter@Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MatchInfo extends BaseEntity {
 
   @Id @GeneratedValue
-  Long id;
+  private Long id;
 
-  Long partyInfoId;
+  private Long partyInfoId;
 
-  String userId;
+  private String userId;
 
-  MatchStatus matchStatus;
+  private MatchStatus matchStatus;
 
   public boolean isUser(String userId) {
     return this.getUserId().equals(userId);
 }
+
+  public static MatchInfo of(Long partyInfoId, String userId, MatchStatus matchStatus){
+    return MatchInfo.builder()
+            .partyInfoId(partyInfoId)
+            .userId(userId)
+            .matchStatus(matchStatus)
+            .build();
+  }
+
 
 }

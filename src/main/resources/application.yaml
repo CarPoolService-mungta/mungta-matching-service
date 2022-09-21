@@ -26,21 +26,38 @@ spring:
       kafka:
         binder:
           brokers: localhost:9092
-        streams:
-          binder:
-            configuration:
-              default:
+        bindings:
+          partyRegistered-in-0:
+            consumer:
+              configuration:
                 key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyStatusChanged-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberAccept-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberCanceled-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
       bindings:
-        event-in:
-          group: pet
-          destination: petstore
+        partyRegistered-in-0:
+          destination: party-registered
+        partyStatusChanged-out:
+          destination: party-status-changed
           contentType: application/json
-        event-out:
-          destination: petstore
+        partyMemberAccept-out:
+          destination: party-member-accept
+          contentType: application/json
+        partyMemberCanceled-out:
+          destination: party-member-canceled
           contentType: application/json
 
 api:

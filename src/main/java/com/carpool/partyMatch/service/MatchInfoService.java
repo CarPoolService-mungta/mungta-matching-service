@@ -2,6 +2,7 @@ package com.carpool.partyMatch.service;
 
 import java.util.List;
 
+import com.carpool.partyMatch.domain.kafka.PartyRegistered;
 import org.springframework.data.repository.query.Param;
 
 import com.carpool.partyMatch.domain.MatchInfo;
@@ -29,4 +30,5 @@ public interface MatchInfoService {
 
   public PartyProcessResponse closeParty(PartyProcessDto partyProcessDto);
   public PartyProcessResponse cancelParty(PartyProcessDto partyProcessDto);
+  public void partyRegistered(PartyRegistered partyRegistered);
 }
