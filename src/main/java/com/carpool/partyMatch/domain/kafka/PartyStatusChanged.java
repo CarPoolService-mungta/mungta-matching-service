@@ -14,5 +14,6 @@ public class PartyStatusChanged extends AbstractEvent{
 
   private Long partyInfoId;
   private PartyStatus partyStatus;
+  private PartyStatus pastPartyStatus;
 
 }

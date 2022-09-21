@@ -47,15 +47,15 @@ public class MatchInfoController {
 	}
 
 
-  @Description("개인 파티 매칭 정보 조회")
-  @GetMapping("/matchInfo")
-	public ResponseEntity<MatchProcessResponse> getMatchInfo(@RequestParam Long partyInfoId, @RequestHeader("userId") String userId) {
-    log.info("***************** MatchInfoController : 개인 파티 매칭 정보 조회 Postmapping 호출 *****************");
-
-    MatchProcessResponse response = matchInfoService.findMatchInfo(partyInfoId, userId);
-
-    return ResponseEntity.ok(response);
-	}
+//  @Description("개인 파티 매칭 정보 조회")
+//  @GetMapping("/matchInfo")
+//	public ResponseEntity<MatchProcessResponse> getMatchInfo(@RequestParam Long partyInfoId, @RequestHeader("userId") String userId) {
+//    log.info("***************** MatchInfoController : 개인 파티 매칭 정보 조회 Postmapping 호출 *****************");
+//
+//    MatchProcessResponse response = matchInfoService.findMatchInfo(partyInfoId, userId);
+//
+//    return ResponseEntity.ok(response);
+//	}
 
 
   @Description("파티 신청")

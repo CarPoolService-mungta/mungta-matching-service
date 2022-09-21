@@ -8,5 +8,5 @@ public enum MatchStatus{
     START, // 파티 시작 됨
     CLOSE, // 파티 종료됨
     FORMED, // 파티 형성됨
-    AVAILABLE; // 파티 진행 가능함...(신경 안써도 된다.)
+    REJECT,//파티 생성이 파티매칭에 되지 않았을 경우
 }

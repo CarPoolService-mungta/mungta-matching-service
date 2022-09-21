@@ -17,13 +17,15 @@ public class MatchAccepted extends AbstractEvent{
     private Long partyInfoId;
     private String userId;
     private MatchStatus matchStatus;
+    private MatchStatus pastMatchStatus;
 
 
-    public static MatchAccepted of(MatchInfo matchInfo){
+    public static MatchAccepted of(MatchInfo matchInfo, MatchStatus pastMatchStatus){
         return MatchAccepted.builder()
                 .partyInfoId(matchInfo.getPartyInfoId())
                 .userId(matchInfo.getUserId())
                 .matchStatus(matchInfo.getMatchStatus())
+                .pastMatchStatus(pastMatchStatus)
                 .build();
     }
 }

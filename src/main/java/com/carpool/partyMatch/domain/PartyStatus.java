@@ -12,4 +12,5 @@ public enum PartyStatus{
     CANCELED,
     STARTED,
     CLOSED,
+    REJECT,//파티 생성이 파티매칭에 되지 않았을 경우
 }
