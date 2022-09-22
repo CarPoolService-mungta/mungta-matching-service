@@ -89,6 +89,7 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
     List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
       {
         add(MatchStatus.ACCEPT);
+        add(MatchStatus.FORMED);
         add(MatchStatus.CLOSE);
       }
     } ;
