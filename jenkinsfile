@@ -2,11 +2,11 @@ pipeline {
   agent any
   environment {
     IMAGE_REPO = 'mungtaregistry.azurecr.io/mungta/dev'
-    IMAGE_NAME = 'accusation-service'
-    IMAGE_TAG = "${env.BUILD_NUMBER}"
+    IMAGE_NAME = 'match-service'
+    // IMAGE_TAG = "${env.BUILD_NUMBER}"
     //IMAGE_TAG = 'latest'
     ENVIRONMENT = 'dev'
-    ARGOCD_APP = 'mungta-accusation'
+    ARGOCD_APP = 'mungta-match'
     APP_WAIT_TIMEOUT = '600'
   }
   stages {
