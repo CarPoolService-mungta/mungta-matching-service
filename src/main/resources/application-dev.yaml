@@ -1,0 +1,88 @@
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /api/swagger-ui/index.html
+    operationsSorter: method
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:3306/match-db?serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      auto-commit: false
+      connection-test-query: SELECT 1
+      minimum-idle: 5
+      maximum-pool-size: 10
+      pool-name: mungta_accusation_pool
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  thymeleaf:
+    prefix: classpath:/static/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    check-template-location: true
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka.kafka.svc.cluster.local:9092
+        bindings:
+          producer-out-0:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+      bindings:
+        producer-out-0:
+          destination: accusation-topic
+          contentType: application/json
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+api:
+  url:
+    user: http://gateway:8080/api/user
+    party: http://gateway:8080/api/party-management/partyInfos/carpool-summary-info
+
+logging:
+  level:
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
+    com.mungta.accusation: debug
