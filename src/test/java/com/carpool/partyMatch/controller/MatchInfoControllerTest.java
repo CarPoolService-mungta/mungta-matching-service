@@ -74,30 +74,30 @@ public class MatchInfoControllerTest {
 
     }
 
-    @DisplayName("매칭 정보 조회 API")
-    @Test
-    void getMatchInfo() throws Exception {
-
-        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(matchInfo.getPartyInfoId(), matchInfo.getUserId(), matchInfo.getMatchStatus());
-
-        doReturn(matchProcessResponse)
-                .when(matchInfoService).findMatchInfo(PARTYINFO_ID,USER_ID);
-
-
-        MultiValueMap<String, String> info = new LinkedMultiValueMap<>();
-        info.add("partyInfoId", "1");
-        info.add("userId", USER_ID);
-
-        ResultActions result = mockMvc.perform(
-                get("/api/match/matchInfo")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .params(info)
-        );
-
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.partyInfoId").value(PARTYINFO_ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID));
-    }
+//    @DisplayName("매칭 정보 조회 API")
+//    @Test
+//    void getMatchInfo() throws Exception {
+//
+//        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(matchInfo.getPartyInfoId(), matchInfo.getUserId(), matchInfo.getMatchStatus());
+//
+//        doReturn(matchProcessResponse)
+//                .when(matchInfoService).findMatchInfo(PARTYINFO_ID,USER_ID);
+//
+//
+//        MultiValueMap<String, String> info = new LinkedMultiValueMap<>();
+//        info.add("partyInfoId", "1");
+//        info.add("userId", USER_ID);
+//
+//        ResultActions result = mockMvc.perform(
+//                get("/api/match/matchInfo")
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .params(info)
+//        );
+//
+//        result.andExpect(status().isOk())
+//                .andExpect(jsonPath("$.partyInfoId").value(PARTYINFO_ID))
+//                .andExpect(jsonPath("$.userId").value(USER_ID));
+//    }
 
 
     @DisplayName("매칭 취소 API")
