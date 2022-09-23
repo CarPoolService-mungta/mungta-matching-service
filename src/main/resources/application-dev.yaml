@@ -25,24 +25,13 @@ spring:
       pool-name: mungta_accusation_pool
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: create
+#    hibernate:
+#      ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   thymeleaf:
     prefix: classpath:/static/
     suffix: .html
@@ -53,17 +42,74 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: kafka.kafka.svc.cluster.local:9092
+          brokers: localhost:9092
         bindings:
-          producer-out-0:
+          partyRegistered-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyRegisteredReject-out:
             producer:
               configuration:
                 key:
                   serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyStatusChanged-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyStatusChangedReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyMemberAccept-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberAcceptReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyMemberCanceled-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberCanceledReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
       bindings:
-        producer-out-0:
-          destination: accusation-topic
+        partyRegistered-in-0:
+          destination: party-registered
+        partyRegisteredReject-out:
+          destination: party-registered-reject
           contentType: application/json
+        partyStatusChanged-out:
+          destination: party-status-changed
+          contentType: application/json
+        partyStatusChangedReject-in-0:
+          destination: party-status-changed-reject
+        partyMemberAccept-out:
+          destination: party-member-accept
+          contentType: application/json
+        partyMemberAcceptReject-in-0:
+          destination: party-member-accept-reject
+        partyMemberCanceled-out:
+          destination: party-member-canceled
+          contentType: application/json
+        partyMemberCanceledReject-in-0:
+          destination: party-member-canceled-reject
+
+  api:
+    url:
+      user: http://localhost:8081/api/user
+      review: http://localhost:8086/api/review
 
 management:
   endpoint:
@@ -75,11 +121,6 @@ management:
       enabled: true
     readinessState:
       enabled: true
-
-api:
-  url:
-    user: http://gateway:8080/api/user
-    party: http://gateway:8080/api/party-management/partyInfos/carpool-summary-info
 
 logging:
   level:
