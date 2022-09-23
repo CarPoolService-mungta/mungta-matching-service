@@ -6,6 +6,6 @@ import lombok.Data;
 public class PartyProcessDto {
 
   private Long partyInfoId;
-  private String driverId;
+  private String userId;
 
 }

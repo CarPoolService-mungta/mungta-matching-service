@@ -1,10 +1,10 @@
 server:
-  port: 8080
+  port: 8085
 
 ---
 
 server:
-  port: 8081
+  port: 8085
 
 spring:
   profiles: default
@@ -26,22 +26,73 @@ spring:
       kafka:
         binder:
           brokers: localhost:9092
-        streams:
-          binder:
-            configuration:
-              default:
+        bindings:
+          partyRegistered-in-0:
+            consumer:
+              configuration:
                 key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyRegisteredReject-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyStatusChanged-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyStatusChangedReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyMemberAccept-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberAcceptReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          partyMemberCanceled-out:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+          partyMemberCanceledReject-in-0:
+            consumer:
+              configuration:
+                key:
+                  deserializer: org.apache.kafka.common.serialization.StringDeserializer
       bindings:
-        event-in:
-          group: pet
-          destination: petstore
+        partyRegistered-in-0:
+          destination: party-registered
+        partyRegisteredReject-out:
+          destination: party-registered-reject
           contentType: application/json
-        event-out:
-          destination: petstore
+        partyStatusChanged-out:
+          destination: party-status-changed
           contentType: application/json
+        partyStatusChangedReject-in-0:
+          destination: party-status-changed-reject
+        partyMemberAccept-out:
+          destination: party-member-accept
+          contentType: application/json
+        partyMemberAcceptReject-in-0:
+          destination: party-member-accept-reject
+        partyMemberCanceled-out:
+          destination: party-member-canceled
+          contentType: application/json
+        partyMemberCanceledReject-in-0:
+          destination: party-member-canceled-reject
+
+api:
+  url:
+    user: http://localhost:8081/api/user
+    review: http://localhost:8086/api/review
 
 logging:
   level:

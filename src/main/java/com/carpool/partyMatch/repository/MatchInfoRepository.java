@@ -1,6 +1,8 @@
 package com.carpool.partyMatch.repository;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,8 +13,10 @@ import com.carpool.partyMatch.domain.MatchStatus;
 
 public interface MatchInfoRepository extends JpaRepository<MatchInfo, Long>{    // Repository Pattern Interface
 
-  MatchInfo findByPartyInfoIdAndUserId(Long partyInfoId, String userId);
+  Optional<MatchInfo> findByPartyInfoIdAndUserId(Long partyInfoId, String userId);
   List<MatchInfo> findByPartyInfoIdAndMatchStatus(Long partyInfoId, MatchStatus matchStatus);
+
+  List<MatchInfo> findByPartyInfoIdAndMatchStatusIsIn(Long partyInfoId, List<MatchStatus> matchStatus);
   List<MatchInfo> findByUserIdAndMatchStatus(String userId, MatchStatus matchStatus);
   void deleteByPartyInfoIdAndUserId(Long partyInfoId, String userId);
 }

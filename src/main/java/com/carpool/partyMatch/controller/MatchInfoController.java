@@ -6,13 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Description;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 
 import com.carpool.partyMatch.domain.MatchStatus;
@@ -53,15 +47,15 @@ public class MatchInfoController {
 	}
 
 
-  @Description("개인 파티 매칭 정보 조회")
-  @GetMapping("/matchInfo")
-	public ResponseEntity<MatchProcessResponse> getMatchInfo(@RequestParam Long partyInfoId, @RequestParam String userId) {
-    log.info("***************** MatchInfoController : 개인 파티 매칭 정보 조회 Postmapping 호출 *****************");
-
-    MatchProcessResponse response = matchInfoService.findMatchInfo(partyInfoId, userId);
-
-    return ResponseEntity.ok(response);
-	}
+//  @Description("개인 파티 매칭 정보 조회")
+//  @GetMapping("/matchInfo")
+//	public ResponseEntity<MatchProcessResponse> getMatchInfo(@RequestParam Long partyInfoId, @RequestHeader("userId") String userId) {
+//    log.info("***************** MatchInfoController : 개인 파티 매칭 정보 조회 Postmapping 호출 *****************");
+//
+//    MatchProcessResponse response = matchInfoService.findMatchInfo(partyInfoId, userId);
+//
+//    return ResponseEntity.ok(response);
+//	}
 
 
   @Description("파티 신청")
@@ -125,5 +119,15 @@ public class MatchInfoController {
 
     return ResponseEntity.ok(response);
 	}
+
+    @Description("파티 취소")
+    @PostMapping("/party-cancel")
+    public ResponseEntity<PartyProcessResponse> cancelParty(@RequestBody PartyProcessDto partyProcessDto) {
+        log.info("***************** MatchInfoController : 파티 종료 Postmapping 호출 *****************");
+
+        PartyProcessResponse response = matchInfoService.cancelParty(partyProcessDto);
+
+        return ResponseEntity.ok(response);
+    }
 
 }

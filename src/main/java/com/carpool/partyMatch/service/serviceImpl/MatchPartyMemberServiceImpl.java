@@ -1,15 +1,14 @@
 package com.carpool.partyMatch.service.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.lang.RuntimeException;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.function.Function;
 
+import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberResponse;
+import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberWithMatchStatusResponse;
+import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.beans.BeanUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.MatchStatus;
 import com.carpool.partyMatch.service.MatchPartyMemberService;
-import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberResponse;
-import com.carpool.partyMatch.controller.dto.MatchPartyMemberDto;
 import com.carpool.partyMatch.client.ReviewServiceClient;
 import com.carpool.partyMatch.client.UserServiceClient;
 import com.carpool.partyMatch.client.dto.UserResponse;
@@ -36,12 +33,17 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
   private final UserServiceClient userServiceClient;
 
   @Override
-  public List<MatchPartyMemberResponse> findMatchPartyMembers(Long partyInfoId, String matchStatus) {
+  public MatchPartyMemberWithMatchStatusResponse findMatchPartyMembers(Long partyInfoId) {
     log.info("********* findMatchPartyMembers Service *********");
 
-    MatchStatus ms = MatchStatus.valueOf(matchStatus);
-
-    List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatus(partyInfoId, ms);
+    List<MatchStatus> matchStatusList = new ArrayList<>(){
+      {
+        add(MatchStatus.WAITING);
+        add(MatchStatus.FORMED);
+        add(MatchStatus.ACCEPT);
+      }
+    } ;
+    List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, matchStatusList);
 
     List<String> userIds = matchInfoList.stream()
         .map(m -> m.getUserId())
@@ -50,18 +52,52 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
     List<UserResponse> userList = userServiceClient.getUserList(userIds);
     List<ReviewResponse> reviewList = reviewServiceClient.getReviewList(userIds);
 
-    Map<String, ReviewResponse> reviewMap = reviewList.stream()
-        .collect(Collectors.toMap(ReviewResponse::getUserId, Function.identity()));
+    MatchPartyMemberWithMatchStatusResponse matchPartyMemberWithMatchStatusResponse = new MatchPartyMemberWithMatchStatusResponse();
 
-    List<MatchPartyMemberResponse> matchPartyMemberList = userList.stream()
-        .filter(it -> reviewMap.containsKey(it.getUserId()))
-        .map(it -> new MatchPartyMemberResponse(it, reviewMap.get(it.getUserId())))
-        .collect(Collectors.toList());
+    matchInfoList.stream().forEach(o->{
+      matchPartyMemberWithMatchStatusResponse.addMatchStatusMembers(o.getMatchStatus(),
+              MatchPartyMemberResponse.of(userList.stream().filter(u->u.getUserId().equals(o.getUserId())).findFirst().orElse(null),
+                      reviewList.stream().filter(r->r.getUserId().equals(o.getUserId())).findFirst().orElse(null)));
+    });
+
+    return matchPartyMemberWithMatchStatusResponse;
+  }
+
+  @Override
+  public MatchStatusAndMemberListResponse findPartyMembersListSummaryAndMatchStatus(Long partyInfoId, String userId){
+    List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
+      {
+        add(MatchStatus.ACCEPT);
+        add(MatchStatus.START);
+        add(MatchStatus.FORMED);
+        add(MatchStatus.CLOSE);
+      }
+    } ;
+    List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
+    MatchInfo userMatchInfo= matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).orElse(null);
+
+    return MatchStatusAndMemberListResponse.of(userServiceClient.getUserList(matchInfoList.stream()
+            .map(o->o.getUserId())
+            .collect(Collectors.toList())),
+            Objects.isNull(userMatchInfo) ? null : userMatchInfo.getMatchStatus());
+  }
 
 
-    // List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatus(partyInfoId, ms);
+  //Review에서 사용
+  @Override
+  public List<UserResponse> findPartyMembersListSummary(Long partyInfoId){
+    List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
+      {
+        add(MatchStatus.ACCEPT);
+        add(MatchStatus.FORMED);
+        add(MatchStatus.CLOSE);
+      }
+    } ;
+    List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
 
-    return matchPartyMemberList;
+    return userServiceClient.getUserList(matchInfoList.stream()
+            .map(o->o.getUserId())
+            .collect(Collectors.toList()));
   }
 
 }

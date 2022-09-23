@@ -11,17 +11,13 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import com.carpool.partyMatch.domain.MatchStatus;
 import com.carpool.partyMatch.domain.Party;
 import com.carpool.partyMatch.domain.PartyStatus;
 import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.Driver;
 import com.carpool.partyMatch.controller.dto.MatchInfoDto;
 import com.carpool.partyMatch.controller.dto.MatchProcessDto;
-import com.carpool.partyMatch.controller.dto.PartyProcessDto;
-import com.carpool.partyMatch.controller.dto.response.MatchInfoResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchProcessResponse;
-import com.carpool.partyMatch.controller.dto.response.PartyProcessResponse;
 import com.carpool.partyMatch.service.serviceImpl.MatchInfoServiceImpl;
 import com.carpool.partyMatch.repository.MatchInfoRepository;
 import com.carpool.partyMatch.repository.PartyRepository;
@@ -30,18 +26,11 @@ import com.carpool.partyMatch.exception.ApiStatus;
 import static com.carpool.partyMatch.constants.MatchTestSample.*;
 
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import org.springframework.http.MediaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @ExtendWith(value = MockitoExtension.class)
@@ -73,7 +62,7 @@ class MatchInfoServiceTest {
         party.setCurNumberOfParty(1);
         party.setPartyInfoId(PARTYINFO_ID);
         party.setDriver(driver);
-        party.setPartyStatus(PartyStatus.AVAILABLE);
+        party.setPartyStatus(PartyStatus.OPEN);
     }
 
 
@@ -95,7 +84,7 @@ class MatchInfoServiceTest {
     @Test
     void getMatchInfo() {
 
-        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(matchInfo);
+        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID).get()).willReturn(matchInfo);
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessResponse matchProcessResponse = matchInfoService.findMatchInfo(PARTYINFO_ID, USER_ID);
@@ -124,7 +113,7 @@ class MatchInfoServiceTest {
     @Test
     void acceptMatchInfo_not_match_by_driverId() {
 
-        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(matchInfo);
+        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID).get()).willReturn(matchInfo);
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessDto matchProcessDto = new MatchProcessDto(PARTYINFO_ID, DRIVER_ID, DRIVER_NAME, USER_ID);

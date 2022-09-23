@@ -1,11 +1,10 @@
 package com.carpool.partyMatch.service.serviceImpl;
 
 import java.util.List;
-import java.lang.RuntimeException;
-import java.util.stream.Collectors;
 
+import com.carpool.partyMatch.PolicyHandler;
+import com.carpool.partyMatch.domain.kafka.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +15,9 @@ import com.carpool.partyMatch.controller.dto.response.PartyProcessResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchProcessResponse;
 import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.Party;
-import com.carpool.partyMatch.domain.Carpooler;
 import com.carpool.partyMatch.domain.Driver;
 import com.carpool.partyMatch.domain.MatchStatus;
 import com.carpool.partyMatch.domain.PartyStatus;
-import com.carpool.partyMatch.domain.kafka.MatchAccepted;
-import com.carpool.partyMatch.domain.kafka.MatchCancelled;
-import com.carpool.partyMatch.domain.kafka.PartyStarted;
-import com.carpool.partyMatch.domain.kafka.PartyClosed;
 import com.carpool.partyMatch.repository.MatchInfoRepository;
 import com.carpool.partyMatch.repository.PartyRepository;
 import com.carpool.partyMatch.service.MatchInfoService;
@@ -44,6 +38,8 @@ public class MatchInfoServiceImpl implements MatchInfoService {
   private final MatchInfoRepository matchInfoRepository;
   private final PartyRepository partyRepository;
 
+  private final KafkaProducer kafkaProducer;
+
     @Override
     public List<MatchInfo> findMatchInfoList(Long partyInfoId, String matchStatus){
         log.info("********* findMatchUsers Service *********");
@@ -55,34 +51,63 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         return matchInfoList;
     }
 
-    @Override
-    public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId){
-        log.info("********* findMatchInfo Service *********");
-
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
-        Party party = partyRepository.findByPartyInfoId(partyInfoId);
-
-        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(partyInfoId, userId, MatchStatus.AVAILABLE);
-        Driver driver = party.getDriver();
-
-        if(matchInfo != null){
-            matchProcessResponse.setMatchStatus(matchInfo.getMatchStatus());
-        } else{
-            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
-        }
-
-        if(driver.getDriverId().equals(userId)){
-
-            if(party.getPartyStatus() == PartyStatus.STARTED){
-                matchProcessResponse.setMatchStatus(MatchStatus.START);
-            }
-            else{
-                matchProcessResponse.setMatchStatus(MatchStatus.FORMED);
-            }
-        }
-
-        return matchProcessResponse;
-    }
+    //userId가 왜있는지 모르겠음..
+//    @Override
+//    public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId){
+//        log.info("********* findMatchInfo Service *********");
+//
+//        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
+//        Party party = partyRepository.findByPartyInfoId(partyInfoId);
+//
+//        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(partyInfoId, userId, MatchStatus.AVAILABLE);
+//        Driver driver = party.getDriver();
+//
+//        if(matchInfo != null){
+//            matchProcessResponse.setMatchStatus(matchInfo.getMatchStatus());
+//        } else{
+//            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+//        }
+//
+//        if(driver.getDriverId().equals(userId)){
+//
+//            if(party.getPartyStatus() == PartyStatus.STARTED){
+//                matchProcessResponse.setMatchStatus(MatchStatus.START);
+//            }
+//            else{
+//                matchProcessResponse.setMatchStatus(MatchStatus.FORMED);
+//            }
+//        }
+//
+//        return matchProcessResponse;
+//    }
+//    @Override
+//    public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId){
+//        log.info("********* findMatchInfo Service *********");
+//        Party party = partyRepository.findByPartyInfoId(partyInfoId);
+//
+//        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).get();
+//
+//        MatchProcessResponse matchProcessResponse = new MatchProcessResponse(partyInfoId, userId, MatchStatus.AVAILABLE);
+//        Driver driver = party.getDriver();
+//
+//        if(matchInfo != null){
+//            matchProcessResponse.setMatchStatus(matchInfo.getMatchStatus());
+//        } else{
+//            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+//        }
+//
+//        if(driver.getDriverId().equals(userId)){
+//
+//            if(party.getPartyStatus() == PartyStatus.STARTED){
+//                matchProcessResponse.setMatchStatus(MatchStatus.START);
+//            }
+//            else{
+//                matchProcessResponse.setMatchStatus(MatchStatus.FORMED);
+//            }
+//        }
+//
+//        return matchProcessResponse;
+//    }
 
     @Override
     @Transactional
@@ -111,24 +136,43 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         validateCancelParty(party);
 
         //파티 상태 확인
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId());
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId()).orElse(null);
         if(matchInfo == null){
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
         }
 
         boolean isAccepted = false;
         if(matchInfo.getMatchStatus() == MatchStatus.ACCEPT) isAccepted = true;
+
+        MatchStatus pastMatchStatus = matchInfo.getMatchStatus();
         matchInfo.setMatchStatus(MatchStatus.CANCEL);
 
-        //매칭 취소 이벤트 발행
         if(isAccepted){
-            party.removePartyNumber();
-            MatchCancelled matchCancelled = new MatchCancelled();
-            BeanUtils.copyProperties(matchInfo, matchCancelled);
-            matchCancelled.publish();
+            kafkaProducer.send("partyMemberCanceled-out", MatchCancelled.of(matchInfo, pastMatchStatus));
+            minusPartyNumber(party);
         }
+        //매칭 취소 이벤트 발행
+//        if(isAccepted){
+//            party.removePartyNumber();
+//            MatchCancelled matchCancelled = new MatchCancelled();
+//            BeanUtils.copyProperties(matchInfo, matchCancelled);
+//            matchCancelled.publish();
+//        }
+    }
 
-        matchInfoRepository.deleteByPartyInfoIdAndUserId(matchInfoDto.getPartyInfoId(), matchInfoDto.getUserId());
+    @Override
+    @Transactional
+    public void cancelMatchInfoRollback(MatchCancelled matchCancelled){
+        log.info("********* cancelMatchInfo *********");
+        log.debug(String.valueOf(matchCancelled));
+
+        Party party = partyRepository.findByPartyInfoId(matchCancelled.getPartyInfoId());
+
+        //파티 상태 확인
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchCancelled.getPartyInfoId(), matchCancelled.getUserId()).get();
+        matchInfo.setMatchStatus(matchCancelled.getPastMatchStatus());
+
+        addPartyNumber(party);
     }
 
     @Override
@@ -140,18 +184,66 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         Party party = partyRepository.findByPartyInfoId(matchProcessDto.getPartyInfoId());
         validateDriver(party, matchProcessDto.getDriverId());
 
-        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId());
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId()).get();
         validateProcess(matchInfo);
 
+        MatchStatus pastMatchStatus = matchInfo.getMatchStatus();
         matchInfo.setMatchStatus(MatchStatus.ACCEPT);
-        party.addPartyNumber();
+
+        kafkaProducer.send("partyMemberAccept-out", MatchAccepted.of(matchInfo, pastMatchStatus));
+
+        addPartyNumber(party);
 
         //매칭 수락 이벤트 발행
-        MatchAccepted matchAccepted = new MatchAccepted();
-        BeanUtils.copyProperties(matchInfo, matchAccepted);
-        matchAccepted.publish();
+//        MatchAccepted matchAccepted = new MatchAccepted();
+//        BeanUtils.copyProperties(matchInfo, matchAccepted);
+//        matchAccepted.publish();
 
         return matchInfo;
+    }
+
+
+    @Override
+    @Transactional
+    public MatchInfo acceptMatchInfoRollback(MatchAccepted matchAccepted){
+        log.info("********* acceptMatchInfoRollback *********");
+        log.debug(String.valueOf(matchAccepted));
+
+        Party party = partyRepository.findByPartyInfoId(matchAccepted.getPartyInfoId());
+
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(matchAccepted.getPartyInfoId(), matchAccepted.getUserId()).get();
+        matchInfo.setMatchStatus(matchAccepted.getPastMatchStatus());
+
+        minusPartyNumber(party);
+
+        return matchInfo;
+    }
+
+    public void minusPartyNumber(Party party){
+        int restNumber = party.getCurNumberOfParty() - 1;
+        if(restNumber < party.getMaxNumberOfParty()){
+            PartyStatus pastPartyStatus = party.getPartyStatus();
+            party.setPartyStatus(PartyStatus.OPEN);
+            publishPartyStatusChanged(party, pastPartyStatus);
+        }
+        else if (restNumber > party.getMaxNumberOfParty()) {
+            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+        }
+        party.setCurNumberOfParty(restNumber);
+
+    }
+
+    public void addPartyNumber(Party party) {
+        int restNumber = party.getCurNumberOfParty() + 1;
+        if(restNumber == party.getMaxNumberOfParty()){
+            PartyStatus pastPartyStatus = party.getPartyStatus();
+            party.setPartyStatus(PartyStatus.FULL);
+            publishPartyStatusChanged(party, pastPartyStatus);
+        }
+        else if (restNumber > party.getMaxNumberOfParty()) {
+            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+        }
+        party.setCurNumberOfParty(restNumber);
     }
 
     //파티관리 서비스에서 신청 가능 인원 확인 후 신청 불가할 경우에도 아래 실행
@@ -164,7 +256,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         Party party = partyRepository.findByPartyInfoId(matchProcessDto.getPartyInfoId());
         validateDriver(party, matchProcessDto.getDriverId());
 
-        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId());
+        MatchInfo matchInfo = matchInfoRepository.findByPartyInfoIdAndUserId(matchProcessDto.getPartyInfoId(), matchProcessDto.getUserId()).get();
         validateProcess(matchInfo);
 
         matchInfo.setMatchStatus(MatchStatus.DENY);
@@ -177,20 +269,20 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         //파티 상태 확인 (시작 또는 종료이면 신청 불가)
         Party party = partyRepository.findByPartyInfoId(partyInfoId);
 
-        if(party.getPartyStatus() != PartyStatus.AVAILABLE && party.getPartyStatus() != PartyStatus.FULL){
+        if(party.getPartyStatus() != PartyStatus.OPEN && party.getPartyStatus() != PartyStatus.FULL){
 
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
 
         }
 
-        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId);
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).orElse(null);
         if (matchInfo != null) {
             throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
         }
 
         List<MatchInfo> matchWaitList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.WAITING);
-        List<MatchInfo> matchAcceptList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.ACCEPT);
-        if (!matchWaitList.isEmpty() || !matchAcceptList.isEmpty()) {
+//        List<MatchInfo> matchAcceptList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.ACCEPT);
+        if (!matchWaitList.isEmpty()) {
             throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
         }
 
@@ -198,7 +290,7 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
     private void validateCancelParty(Party party) {
 
-        if(party.getPartyStatus() != PartyStatus.AVAILABLE && party.getPartyStatus() != PartyStatus.FULL){
+        if(party.getPartyStatus() != PartyStatus.OPEN && party.getPartyStatus() != PartyStatus.FULL){
 
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
 
@@ -206,11 +298,11 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
     }
 
-    private void validateDriver(Party party, String driverId) {
+    private void validateDriver(Party party, String userId) {
 
-        if(!party.isDriver(driverId)){
+        if(!party.isDriver(userId)){
 
-            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
+            throw new ApiException(ApiStatus.NOT_DRIVER);
 
         }
     }
@@ -224,7 +316,18 @@ public class MatchInfoServiceImpl implements MatchInfoService {
         }
     }
 
+    public void publishPartyStatusChanged(Party party, PartyStatus pastPartyStatus){
+        kafkaProducer.send("partyStatusChanged-out", new PartyStatusChanged(party.getPartyInfoId(), party.getPartyStatus(), pastPartyStatus));
+    }
 
+    @Override
+    @Transactional
+    public void partyStatusRejectRollback(PartyStatusChanged partyStatusChanged){
+        log.info("********* partyStatusRejectRollback *********");
+
+        Party party = partyRepository.findByPartyInfoId(partyStatusChanged.getPartyInfoId());
+        party.setPartyStatus(partyStatusChanged.getPastPartyStatus());
+    }
 
     @Override
     @Transactional
@@ -234,13 +337,17 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
 
-        validateDriver(party, partyProcessDto.getDriverId());
+        validateDriver(party, partyProcessDto.getUserId());
+
+        PartyStatus pastPartyStatus = party.getPartyStatus();
         party.setPartyStatus(PartyStatus.STARTED);
 
-        //파티 시작 이벤트 발행
-        PartyStarted partyStarted = new PartyStarted();
-        BeanUtils.copyProperties(party, partyStarted);
-        partyStarted.publish();
+        publishPartyStatusChanged(party, pastPartyStatus);
+
+//        //파티 시작 이벤트 발행
+//        PartyStarted partyStarted = new PartyStarted();
+//        BeanUtils.copyProperties(party, partyStarted);
+//        partyStarted.publish();
 
         PartyProcessResponse response = new PartyProcessResponse(party.getPartyInfoId(), party.getPartyStatus());
 
@@ -256,17 +363,69 @@ public class MatchInfoServiceImpl implements MatchInfoService {
 
         Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
 
-        validateDriver(party, partyProcessDto.getDriverId());
+        validateDriver(party, partyProcessDto.getUserId());
+
+        PartyStatus pastPartyStatus = party.getPartyStatus();
         party.setPartyStatus(PartyStatus.CLOSED);
 
-        //파티 종료 이벤트 발행
-        PartyClosed partyClosed = new PartyClosed();
-        BeanUtils.copyProperties(party, partyClosed);
-        partyClosed.publish();
+        publishPartyStatusChanged(party, pastPartyStatus);
+
+//        //파티 종료 이벤트 발행
+//        PartyClosed partyClosed = new PartyClosed();
+//        BeanUtils.copyProperties(party, partyClosed);
+//        partyClosed.publish();
 
         PartyProcessResponse response = new PartyProcessResponse(party.getPartyInfoId(), party.getPartyStatus());
 
         return response;
     }
+
+    @Override
+    @Transactional
+    public PartyProcessResponse cancelParty(PartyProcessDto partyProcessDto){
+        log.info("********* cancelParty *********");
+        log.debug(String.valueOf(partyProcessDto));
+
+        Party party = partyRepository.findByPartyInfoId(partyProcessDto.getPartyInfoId());
+
+        validateDriver(party, partyProcessDto.getUserId());
+
+        PartyStatus pastPartyStatus = party.getPartyStatus();
+        party.setPartyStatus(PartyStatus.CANCELED);
+
+        publishPartyStatusChanged(party, pastPartyStatus);
+
+        //파티 취소 이벤트 발행
+//        PartyCanceled partyClosed = new PartyCanceled();
+//        BeanUtils.copyProperties(party, partyClosed);
+//        partyClosed.publish();
+
+        PartyProcessResponse response = new PartyProcessResponse(party.getPartyInfoId(), party.getPartyStatus());
+
+        return response;
+    }
+
+
+    @Override
+    @Transactional
+    public void partyRegistered(PartyRegistered partyRegistered){
+        log.info("********* registeredParty *********");
+
+        Party party = Party.of(
+                partyRegistered.getPartyId(),
+                1,
+                partyRegistered.getMaxNumberOfParty(),
+                new Driver(partyRegistered.getDriverId(),partyRegistered.getDriverName()),
+                PartyStatus.OPEN);
+
+        MatchInfo matchInfo = MatchInfo.of(
+                partyRegistered.getPartyId(),
+                partyRegistered.getDriverId(),
+                MatchStatus.FORMED);
+
+        partyRepository.save(party);
+        matchInfoRepository.save(matchInfo);
+    }
+
 
 }

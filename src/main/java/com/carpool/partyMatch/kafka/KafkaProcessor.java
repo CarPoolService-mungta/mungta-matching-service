@@ -7,13 +7,25 @@ import org.springframework.messaging.SubscribableChannel;
 
 public interface KafkaProcessor {
 
-    String INPUT = "event-in";
-    String OUTPUT = "event-out";
+    String PARTY_REGISTERED = "partyRegistered-in-0";
+    String PARTY_STATUS_CHANGED_REJECT="partyStatusChangedReject-in-0";
+    String PARTY_MEMBER_ACCEPT_REJECT="partyMemberAcceptReject-in-0";
+    String PARTY_MEMBER_CANCEL_REJECT="partyMemberCanceledReject-in-0";
+//    String OUTPUT = "event-out";
 
-    @Input(INPUT)
-    SubscribableChannel inboundTopic();
+    @Input(PARTY_REGISTERED)
+    SubscribableChannel partyRegisteredTopic();
 
-    @Output(OUTPUT)
-    MessageChannel outboundTopic();
+    @Input(PARTY_STATUS_CHANGED_REJECT)
+    SubscribableChannel partyStatusChangedRejectTopic();
+
+    @Input(PARTY_MEMBER_ACCEPT_REJECT)
+    SubscribableChannel partyMemberAcceptRejectTopic();
+
+    @Input(PARTY_MEMBER_CANCEL_REJECT)
+    SubscribableChannel partyMemberCancelRejectTopic();
+
+//    @Output(OUTPUT)
+//    MessageChannel outboundTopic();
 
 }

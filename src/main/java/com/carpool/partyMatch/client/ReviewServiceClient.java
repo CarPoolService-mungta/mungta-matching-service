@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "review", url = "http://localhost:8083/api/review")
+@FeignClient(name = "review", url = "${api.url.review}")
 public interface ReviewServiceClient {
 
-    @GetMapping(path = "")
+    @GetMapping(path = "/summary")
     List<ReviewResponse> getReviewList(@RequestParam List<String> userIds);
 
 }

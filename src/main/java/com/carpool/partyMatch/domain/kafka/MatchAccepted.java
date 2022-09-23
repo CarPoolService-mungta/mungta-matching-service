@@ -1,41 +1,31 @@
 package com.carpool.partyMatch.domain.kafka;
 
 import com.carpool.partyMatch.AbstractEvent;
+import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.MatchStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
 public class MatchAccepted extends AbstractEvent{
-    Long id;
-    Long partyInfoId;
-    String userId;
-    MatchStatus matchStatus;
 
-    public Long getId() {
-        return id;
+    private Long partyInfoId;
+    private String userId;
+    private MatchStatus matchStatus;
+    private MatchStatus pastMatchStatus;
+
+
+    public static MatchAccepted of(MatchInfo matchInfo, MatchStatus pastMatchStatus){
+        return MatchAccepted.builder()
+                .partyInfoId(matchInfo.getPartyInfoId())
+                .userId(matchInfo.getUserId())
+                .matchStatus(matchInfo.getMatchStatus())
+                .pastMatchStatus(pastMatchStatus)
+                .build();
     }
-    public void setId(Long id) {this.id = id;}
-
-    public Long getPartyInfoId() {
-        return partyInfoId;
-    }
-
-    public void setPartyInfoId(Long partyInfoId) {
-        this.partyInfoId = partyInfoId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public MatchStatus getMatchStatus() {
-        return matchStatus;
-    }
-
-    public void setMatchStatus(MatchStatus matchStatus) {
-        this.matchStatus = matchStatus;
-    }
-
 }

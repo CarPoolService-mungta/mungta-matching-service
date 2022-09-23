@@ -5,15 +5,12 @@ import lombok.Data;
 @Data
 public class UserResponse {
 
-  String userId;
-  String name;
-  String gender;
-  String curPhoto;
-  String partyRole;
-  String userTeamName;
+  private String userId;
+  private String userName;
+  private String gender;
+  private String userTeamName;
+  private byte[] userPhoto;
+  private String fileExtension;
 
-  public String getUserId() {
-    return userId;
-  }
 
 }

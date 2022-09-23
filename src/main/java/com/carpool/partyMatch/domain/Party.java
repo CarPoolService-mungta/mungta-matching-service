@@ -2,46 +2,42 @@ package com.carpool.partyMatch.domain;
 
 //import java.util.List;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
-import java.util.List;
 
 import com.carpool.partyMatch.exception.ApiException;
 import com.carpool.partyMatch.exception.ApiStatus;
 
 @Entity
-@Data
+@Getter@Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Party extends BaseEntity {
 
     @Id @GeneratedValue
-    Long id;
-    Long partyInfoId;
-    int curNumberOfParty;
-    int maxNumberOfParty;
+    private Long id;
+    private Long partyInfoId;
+    private int curNumberOfParty;
+    private int maxNumberOfParty;
 
     @Embedded
-    Driver driver;
+    private Driver driver;
 
-    PartyStatus partyStatus;
+    private PartyStatus partyStatus;
 
-    public boolean isDriver(String driverId) {
-        return this.driver.getDriverId().equals(driverId);
+    public boolean isDriver(String userId) {
+        return this.driver.getDriverId().equals(userId);
     }
 
     public void removePartyNumber() {
         int restNumber = this.curNumberOfParty - 1;
         if(restNumber < this.maxNumberOfParty){
-            this.partyStatus = PartyStatus.AVAILABLE;
+            this.partyStatus = PartyStatus.OPEN;
         }
         else if (restNumber < 0) {
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
@@ -49,15 +45,15 @@ public class Party extends BaseEntity {
         this.curNumberOfParty = restNumber;
     }
 
-    public void addPartyNumber() {
-        int restNumber = this.curNumberOfParty + 1;
-        if(restNumber == this.maxNumberOfParty){
-            this.partyStatus = PartyStatus.FULL;
-        }
-        else if (restNumber > this.maxNumberOfParty) {
-            throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
-        }
-        this.curNumberOfParty = restNumber;
+
+    public static Party of(Long partyInfoId, int curNumberOfParty, int maxNumberOfParty, Driver driver, PartyStatus partyStatus){
+        return Party.builder()
+                .partyInfoId(partyInfoId)
+                .curNumberOfParty(curNumberOfParty)
+                .maxNumberOfParty(maxNumberOfParty)
+                .driver(driver)
+                .partyStatus(partyStatus)
+                .build();
     }
 
 }
