@@ -9,9 +9,9 @@ server:
 spring:
   profiles: default
   datasource:
-    url: jdbc:mysql://match-service-db.mysql.database.azure.com:3306/match_db?serverTimezone=Asia/Seoul
-    username: mungta
-    password: match12#$
+    url: jdbc:mysql://${DB_HOST}:3306/match_db?serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     # hibernate:
