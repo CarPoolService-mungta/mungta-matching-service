@@ -42,7 +42,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: kafka.kafka.svc.cluster.local:9092
         bindings:
           partyRegistered-in-0:
             consumer:
