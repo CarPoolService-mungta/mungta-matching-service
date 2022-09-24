@@ -95,7 +95,12 @@ api:
     review: http://localhost:8086/api/review
 
 logging:
+  config: classpath:logging/logback-dev.xml
   level:
-    org.hibernate.type: trace
-    org.springframework.cloud: debug
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
 
