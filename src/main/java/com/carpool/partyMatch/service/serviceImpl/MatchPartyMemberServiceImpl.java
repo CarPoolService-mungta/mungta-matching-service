@@ -102,4 +102,16 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
             .collect(Collectors.toList()));
   }
 
+  @Override
+  public List<MatchInfo> findWaitAndAcceptMembersByPartyInfoId(Long partyInfoId){
+    List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
+      {
+        add(MatchStatus.ACCEPT);
+        add(MatchStatus.START);
+        add(MatchStatus.FORMED);
+        add(MatchStatus.CLOSE);
+      }
+    };
+    return matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
+  }
 }

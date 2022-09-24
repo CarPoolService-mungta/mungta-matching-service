@@ -5,6 +5,7 @@ import java.util.List;
 import com.carpool.partyMatch.client.dto.UserResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberWithMatchStatusResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
+import com.carpool.partyMatch.domain.MatchInfo;
 import com.carpool.partyMatch.domain.MatchStatus;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +38,17 @@ public class MatchPartyMemberController {
 
     return ResponseEntity.ok(matchPartyMemberService.findPartyMembersListSummaryAndMatchStatus(partyInfoId, userId));
   }
-
   @Description("파티 매칭 멤버 조회")
   @GetMapping("/summary-for-review")
   public ResponseEntity<List<UserResponse>> findPartyMembersListSummary(@RequestParam long partyInfoId) {
 
     return ResponseEntity.ok(matchPartyMemberService.findPartyMembersListSummary(partyInfoId));
+  }
+
+  @Description("파티 매칭 멤버 조회")
+  @GetMapping("/waiting-and-accpet")
+  public ResponseEntity<List<MatchInfo>>  findWaitAndAcceptMembersByPartyInfoId(@RequestParam long partyInfoId) {
+
+    return ResponseEntity.ok(matchPartyMemberService.findWaitAndAcceptMembersByPartyInfoId(partyInfoId));
   }
 }
