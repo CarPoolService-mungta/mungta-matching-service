@@ -1,70 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
+<configuration>
+    <property name="LOGS_PATH" value="./logs"/>
+    <appender name="ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <charset>UTF-8</charset>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %level %logger{36}@%method\(%line\) - %msg%n</pattern>
-        </layout>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/mungta-notice.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
     </appender>
-
-    <springProfile name="dev, stg, prd">
-        <appender name="fluentd" class="ch.qos.logback.more.appenders.DataFluentAppender">
-            <tag>applog</tag>
-            <label>logback</label>
-            <remoteHost>${FULENTD_SERVER_IP}</remoteHost>
-            <port>24224</port>
-
-            <additionalField>
-                <key>foo</key>
-                <value>bar</value>
-            </additionalField>
-            <additionalField>
-                <key>foo2</key>
-                <value>bar2</value>
-            </additionalField>
-
-            <!-- [Optional] Configurations to customize Fluent-logger-java's behavior -->
-            <bufferCapacity>16777216</bufferCapacity> <!-- in bytes -->
-            <timeout>10000</timeout> <!-- in milliseconds -->
-
-            <!--  [Optional] If true, Map Marker is expanded instead of nesting in the marker name -->
-            <flattenMapMarker>false</flattenMapMarker>
-            <!--  [Optional] default "marker" -->
-            <markerPrefix></markerPrefix>
-
-            <!-- [Optional] Message encoder if you want to customize message -->
-            <layout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %level %logger{36}@%method\(%line\) - %msg%n</pattern>
-            </layout>
-
-            <!-- [Optional] Message field key name. Default: "message" -->
-            <messageFieldKeyName>msg</messageFieldKeyName>
-        </appender>
-
-        <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
-            <!-- Logback의 AsyncAppender 옵션 -->
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>DEBUG</level>
-            </filter>
-            <param name="includeCallerData" value="false"/>
-            <param name="queueSize" value="2048"/>
-            <param name="neverBlock" value="true"/>
-            <param name="maxFlushTime" value="5000"/>
-            <appender-ref ref="fluentd" />
-        </appender>
-    </springProfile>
-
-    <logger name="com.xyz" level="DEBUG" additivity="false">
-        <appender-ref ref="stdout" />
-        <springProfile name="dev, stg, prod">
-            <appender-ref ref="fluentd" />
-        </springProfile>
-    </logger>
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %level %logger{36}@%method\(%line\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
 
     <root level="INFO">
-        <appender-ref ref="stdout" />
-        <springProfile name="dev, stg, prod">
-            <appender-ref ref="fluentd" />
-        </springProfile>
+        <appender-ref ref="ROLLING_FILE_APPENDER"/>
+        <appender-ref ref="CONSOLE_APPENDER"/>
     </root>
-
 </configuration>
