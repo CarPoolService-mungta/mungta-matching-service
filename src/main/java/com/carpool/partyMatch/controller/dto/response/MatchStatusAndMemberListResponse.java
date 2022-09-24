@@ -14,11 +14,13 @@ import java.util.List;
 public class MatchStatusAndMemberListResponse {
     private List<UserResponse> userResponses;
     private MatchStatus matchStatus;
+    private Integer waitingCount;
 
-    public static MatchStatusAndMemberListResponse of(List<UserResponse> userResponses, MatchStatus matchStatus){
+    public static MatchStatusAndMemberListResponse of(List<UserResponse> userResponses, MatchStatus matchStatus, Integer waitingCount){
         return MatchStatusAndMemberListResponse.builder()
                 .userResponses(userResponses)
                 .matchStatus(matchStatus)
+                .waitingCount(waitingCount)
                 .build();
     }
 }

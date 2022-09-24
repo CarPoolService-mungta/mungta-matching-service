@@ -280,11 +280,11 @@ public class MatchInfoServiceImpl implements MatchInfoService {
             throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
         }
 
-        List<MatchInfo> matchWaitList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.WAITING);
+//        List<MatchInfo> matchWaitList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.WAITING);
 //        List<MatchInfo> matchAcceptList = matchInfoRepository.findByUserIdAndMatchStatus(userId, MatchStatus.ACCEPT);
-        if (!matchWaitList.isEmpty()) {
-            throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
-        }
+//        if (!matchWaitList.isEmpty()) {
+//            throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
+//        }
 
     }
 
