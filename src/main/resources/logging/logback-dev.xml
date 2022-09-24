@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOGS_PATH" value="./logs"/>
+    <property name="LOGS_PATH" value="/var/log/containers"/>
     <appender name="ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <charset>UTF-8</charset>
