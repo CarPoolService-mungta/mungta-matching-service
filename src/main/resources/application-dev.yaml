@@ -108,8 +108,8 @@ spring:
 
 api:
   url:
-    user: http://localhost:8081/api/user
-    review: http://localhost:8086/api/review
+    user: http://user:8080/api/user
+    review: http://review:8080/api/review
 
 management:
   endpoint:

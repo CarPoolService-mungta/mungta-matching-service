@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MatchApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="ACTIVE_PROFILES" value="local" />
     <envs>
       <env name="DB_HOST" value="match-service-db.mysql.database.azure.com" />
       <env name="DB_USERNAME" value="mungta" />

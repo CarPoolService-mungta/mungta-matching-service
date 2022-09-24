@@ -7,7 +7,7 @@ server:
   port: 8085
 
 spring:
-  profiles: default
+  profiles: local
   datasource:
     url: jdbc:mysql://${DB_HOST}:3306/match_db?serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
