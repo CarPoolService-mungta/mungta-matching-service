@@ -123,7 +123,11 @@ management:
       enabled: true
 
 logging:
+  config: classpath:logging/logback-mungta-prod.xml
   level:
-    org.hibernate.type: trace
-    org.springframework.cloud: debug
-    com.mungta.accusation: debug
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
