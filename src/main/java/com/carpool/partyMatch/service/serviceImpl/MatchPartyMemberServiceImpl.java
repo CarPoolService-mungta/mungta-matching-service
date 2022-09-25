@@ -106,10 +106,9 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
   public List<MatchInfo> findWaitAndAcceptMembersByPartyInfoId(Long partyInfoId){
     List<MatchStatus> partyMemberStatusCondition = new ArrayList<>(){
       {
-        add(MatchStatus.ACCEPT);
-        add(MatchStatus.START);
+        add(MatchStatus.WAITING);
         add(MatchStatus.FORMED);
-        add(MatchStatus.CLOSE);
+        add(MatchStatus.ACCEPT);
       }
     };
     return matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
