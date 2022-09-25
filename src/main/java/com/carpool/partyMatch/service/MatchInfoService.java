@@ -19,8 +19,6 @@ public interface MatchInfoService {
 
   public List<MatchInfo> findMatchInfoList(Long partyInfoId, String matchStatus);
 
-//  public MatchProcessResponse findMatchInfo(Long partyInfoId, String userId);
-
   public MatchInfo registerMatchInfo(MatchInfoDto matchInfoDto);
 
   public void cancelMatchInfo(MatchInfoDto matchInfoDto);

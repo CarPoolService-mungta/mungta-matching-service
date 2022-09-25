@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchPartyMemberWithMatchStatusResponse;
 import com.carpool.partyMatch.controller.dto.response.MatchStatusAndMemberListResponse;
+import com.carpool.partyMatch.domain.PartyStatus;
+import com.carpool.partyMatch.repository.MatchInfoRepositorySupport;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +33,10 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
 
   private final ReviewServiceClient reviewServiceClient;
   private final UserServiceClient userServiceClient;
+  private final MatchInfoRepositorySupport matchInfoRepositorySupport;
 
   @Override
+  @Deprecated
   public MatchPartyMemberWithMatchStatusResponse findMatchPartyMembers(Long partyInfoId) {
     log.info("********* findMatchPartyMembers Service *********");
 
@@ -112,5 +116,18 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
       }
     };
     return matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
+  }
+
+  @Override
+  public List<Long> findWaitingPartyList(String userId){
+
+    List<PartyStatus> partyStatuses = new ArrayList<>(){
+      {
+        add(PartyStatus.OPEN);
+        add(PartyStatus.FULL);
+      }
+    };
+
+    return matchInfoRepositorySupport.findPartyIdByUserIdAndMatchStatusAndPartyStatuses(userId, MatchStatus.WAITING, partyStatuses);
   }
 }

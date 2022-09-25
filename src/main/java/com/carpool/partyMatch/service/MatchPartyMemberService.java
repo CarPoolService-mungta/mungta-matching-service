@@ -17,5 +17,6 @@ public interface MatchPartyMemberService {
   List<UserResponse> findPartyMembersListSummary(Long partyInfoId);
 
   List<MatchInfo> findWaitAndAcceptMembersByPartyInfoId(Long partyInfoId);
+  List<Long> findWaitingPartyList(String userId);
 }
 

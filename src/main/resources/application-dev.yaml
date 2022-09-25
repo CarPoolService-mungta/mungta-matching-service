@@ -14,7 +14,7 @@ spring:
     enabled: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST}:3306/match_db?serverTimezone=Asia/Seoul
+    jdbc-url: jdbc:mysql://${DB_HOST}:3306/match_db?serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
