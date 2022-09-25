@@ -4,14 +4,7 @@ import java.io.Serializable;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
-import javax.persistence.Embedded;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
+import javax.persistence.*;
 import java.util.List;
 //import javax.persistence.OneToMany;
 
@@ -19,16 +12,20 @@ import java.util.List;
 @Getter@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "match_info")
 @Builder
 public class MatchInfo extends BaseEntity {
 
   @Id @GeneratedValue
   private Long id;
 
+  @Column(name = "party_info_id")
   private Long partyInfoId;
 
+  @Column(name = "user_id")
   private String userId;
 
+  @Column(name = "match_status")
   private MatchStatus matchStatus;
 
   public boolean isUser(String userId) {

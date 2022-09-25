@@ -26,6 +26,7 @@ public class MatchPartyMemberController {
 
   @Description("파티 매칭 정보 전체 조회")
   @GetMapping
+  @Deprecated
   public ResponseEntity<MatchPartyMemberWithMatchStatusResponse> getMatchPartyMembers(@RequestParam long partyInfoId) {
     log.info("***************** MatchInfoController : 파티 매칭 정보 전체 조회 Postmapping 호출 *****************");
     return ResponseEntity.ok(matchPartyMemberService.findMatchPartyMembers(partyInfoId));
@@ -50,5 +51,12 @@ public class MatchPartyMemberController {
   public ResponseEntity<List<MatchInfo>>  findWaitAndAcceptMembersByPartyInfoId(@RequestParam long partyInfoId) {
 
     return ResponseEntity.ok(matchPartyMemberService.findWaitAndAcceptMembersByPartyInfoId(partyInfoId));
+  }
+
+  @Description("대기 중인 파티 리스트")
+  @GetMapping("/waiting-party-list")
+  public ResponseEntity<List<Long>>  findWaitingPartyList(@RequestHeader("userId") String userId) {
+
+    return ResponseEntity.ok(matchPartyMemberService.findWaitingPartyList(userId));
   }
 }

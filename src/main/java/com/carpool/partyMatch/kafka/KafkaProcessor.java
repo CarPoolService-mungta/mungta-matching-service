@@ -25,7 +25,5 @@ public interface KafkaProcessor {
     @Input(PARTY_MEMBER_CANCEL_REJECT)
     SubscribableChannel partyMemberCancelRejectTopic();
 
-//    @Output(OUTPUT)
-//    MessageChannel outboundTopic();
 
 }

@@ -4,10 +4,7 @@ package com.carpool.partyMatch.domain;
 
 import lombok.*;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
+import javax.persistence.*;
 
 import com.carpool.partyMatch.exception.ApiException;
 import com.carpool.partyMatch.exception.ApiStatus;
@@ -16,18 +13,26 @@ import com.carpool.partyMatch.exception.ApiStatus;
 @Getter@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "party")
 @Builder
 public class Party extends BaseEntity {
 
     @Id @GeneratedValue
     private Long id;
+
+    @Column(name = "party_info_id")
     private Long partyInfoId;
+
+    @Column(name = "cur_number_of_party")
     private int curNumberOfParty;
+    @Column(name = "max_number_of_party")
     private int maxNumberOfParty;
 
     @Embedded
     private Driver driver;
 
+
+    @Column(name = "party_status")
     private PartyStatus partyStatus;
 
     public boolean isDriver(String userId) {
