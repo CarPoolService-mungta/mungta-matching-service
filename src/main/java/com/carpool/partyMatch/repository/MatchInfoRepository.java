@@ -13,7 +13,7 @@ import com.carpool.partyMatch.domain.MatchStatus;
 
 public interface MatchInfoRepository extends JpaRepository<MatchInfo, Long>{    // Repository Pattern Interface
 
-  Optional<MatchInfo> findByPartyInfoIdAndUserId(Long partyInfoId, String userId);
+  List<MatchInfo> findAllByPartyInfoIdAndUserId(Long partyInfoId, String userId);
   List<MatchInfo> findByPartyInfoIdAndMatchStatus(Long partyInfoId, MatchStatus matchStatus);
 
   List<MatchInfo> findByPartyInfoIdAndMatchStatusIsIn(Long partyInfoId, List<MatchStatus> matchStatus);

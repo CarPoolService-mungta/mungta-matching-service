@@ -23,6 +23,9 @@ import com.carpool.partyMatch.repository.MatchInfoRepository;
 import com.carpool.partyMatch.repository.PartyRepository;
 import com.carpool.partyMatch.exception.ApiException;
 import com.carpool.partyMatch.exception.ApiStatus;
+
+import java.util.List;
+
 import static com.carpool.partyMatch.constants.MatchTestSample.*;
 
 
@@ -113,7 +116,7 @@ class MatchInfoServiceTest {
     @Test
     void acceptMatchInfo_not_match_by_driverId() {
 
-        given(matchInfoRepository.findByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID).get()).willReturn(matchInfo);
+        given(matchInfoRepository.findAllByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(List.of(matchInfo));
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessDto matchProcessDto = new MatchProcessDto(PARTYINFO_ID, DRIVER_ID, DRIVER_NAME, USER_ID);
