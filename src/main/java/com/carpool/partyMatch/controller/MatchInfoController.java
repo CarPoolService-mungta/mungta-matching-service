@@ -101,7 +101,7 @@ public class MatchInfoController {
 	}
 
   @Description("파티 시작")
-  @PostMapping("/partyStart")
+  @PostMapping("/party-start")
 	public ResponseEntity<PartyProcessResponse> startParty(@RequestBody PartyProcessDto partyProcessDto) {
     log.info("***************** MatchInfoController : 파티 시작 Postmapping 호출 *****************");
 
@@ -111,7 +111,7 @@ public class MatchInfoController {
 	}
 
   @Description("파티 종료")
-  @PostMapping("/partyClose")
+  @PostMapping("/party-close")
 	public ResponseEntity<PartyProcessResponse> closeParty(@RequestBody PartyProcessDto partyProcessDto) {
     log.info("***************** MatchInfoController : 파티 종료 Postmapping 호출 *****************");
 
