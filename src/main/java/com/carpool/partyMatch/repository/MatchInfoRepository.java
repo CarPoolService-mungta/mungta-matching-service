@@ -18,5 +18,6 @@ public interface MatchInfoRepository extends JpaRepository<MatchInfo, Long>{    
 
   List<MatchInfo> findByPartyInfoIdAndMatchStatusIsIn(Long partyInfoId, List<MatchStatus> matchStatus);
   List<MatchInfo> findByUserIdAndMatchStatus(String userId, MatchStatus matchStatus);
+  Optional<MatchInfo> findByPartyInfoIdAndUserIdAndMatchStatusIsIn(Long partyInfoId, String userId, List<MatchStatus> matchStatus);
   void deleteByPartyInfoIdAndUserId(Long partyInfoId, String userId);
 }

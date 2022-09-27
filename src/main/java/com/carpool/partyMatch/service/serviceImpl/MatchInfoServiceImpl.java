@@ -1,5 +1,6 @@
 package com.carpool.partyMatch.service.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.carpool.partyMatch.PolicyHandler;
@@ -274,8 +275,14 @@ public class MatchInfoServiceImpl implements MatchInfoService {
             throw new ApiException(ApiStatus.NOT_EXIST_MATCH);
 
         }
-
-        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserId(partyInfoId, userId).orElse(null);
+        List<MatchStatus> matchStatuses = new ArrayList<>(){
+            {
+                add(MatchStatus.WAITING);
+                add(MatchStatus.FORMED);
+                add(MatchStatus.ACCEPT);
+            }
+        };
+        MatchInfo matchInfo =  matchInfoRepository.findByPartyInfoIdAndUserIdAndMatchStatusIsIn(partyInfoId, userId, matchStatuses).orElse(null);
         if (matchInfo != null) {
             throw new ApiException(ApiStatus.INVALID_MODIFY_MATCH);
         }
