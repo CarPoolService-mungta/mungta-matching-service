@@ -116,7 +116,7 @@ class MatchInfoServiceTest {
     @Test
     void acceptMatchInfo_not_match_by_driverId() {
 
-        given(matchInfoRepository.findAllByPartyInfoIdAndUserId(PARTYINFO_ID, USER_ID)).willReturn(List.of(matchInfo));
+        given(matchInfoRepository.findAllByPartyInfoIdAndUserIdOrderByIdDesc(PARTYINFO_ID, USER_ID)).willReturn(List.of(matchInfo));
         given(partyRepository.findByPartyInfoId(PARTYINFO_ID)).willReturn(party);
 
         MatchProcessDto matchProcessDto = new MatchProcessDto(PARTYINFO_ID, DRIVER_ID, DRIVER_NAME, USER_ID);

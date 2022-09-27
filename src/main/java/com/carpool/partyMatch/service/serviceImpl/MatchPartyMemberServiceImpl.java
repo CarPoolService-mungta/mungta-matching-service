@@ -79,7 +79,7 @@ public class MatchPartyMemberServiceImpl implements MatchPartyMemberService {
     } ;
     List<MatchInfo> matchInfoList = matchInfoRepository.findByPartyInfoIdAndMatchStatusIsIn(partyInfoId, partyMemberStatusCondition);
     List<MatchInfo> waitingList = matchInfoRepository.findByPartyInfoIdAndMatchStatus(partyInfoId, MatchStatus.WAITING);
-    MatchInfo userMatchInfo= matchInfoRepository.findAllByPartyInfoIdAndUserId(partyInfoId, userId).stream().findFirst().orElse(null);
+    MatchInfo userMatchInfo= matchInfoRepository.findAllByPartyInfoIdAndUserIdOrderByIdDesc(partyInfoId, userId).stream().findFirst().orElse(null);
 
     return MatchStatusAndMemberListResponse.of(userServiceClient.getUserList(matchInfoList.stream()
             .map(o->o.getUserId())
